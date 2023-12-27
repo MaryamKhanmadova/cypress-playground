@@ -1,3 +1,4 @@
+import { should } from "chai"
 import { forEach } from "cypress/types/lodash"
 
 describe('test suit', () => {
@@ -20,69 +21,35 @@ describe('test suit', () => {
         })
 
         cy.get("input[id=':r5:']").should('not.match', /^[A-Za-z]+$/);
-
-        // cy.get("input[id=':r5:']").invoke('val').then(value => {
-        //     cy.log(`Zip Code Value: ${value}`);
-        //     expect(/^\d+$/.test(value.toString())).to.be.true;
-        // });
-
-        // cy.get("input[id=':r5:']").invoke('val').then(value => {
-        //     cy.log(`Zip Code Value: ${value}`);
-        //     expect(value).to.match(/^\d+$/);
-        //     expect(value.length).to.be.above(0); // Ən az bir rəqəm olmalıdır.
-        // });
-
-        // cy.contains("input[id=':r5:']", /^\d+$/)
-        // cy.contains('#:r5:', /^\d+$/);
     })
 
     it("fiil in shipping address and proceed", () => {
-        cy.get("Input[name='firstName']").type("Name");
-        cy.get("Input[name='lastName']").type("Surname");
-        cy.get("Input[name='address']").type("Address");
-        cy.get("Input[name='city']").type("Baku");
-        cy.get("Input[name='country']").type("Azerbaijan");
-        cy.get("Input[name='zip']").type("040");
-        cy.get("button[type='button']").click()
+        cy.fiil();
     })
 
     it("user cannot proceed empty payment form", () => {
-        cy.get("Input[name='firstName']").type("Name");
-        cy.get("Input[name='lastName']").type("Surname");
-        cy.get("Input[name='address']").type("Address");
-        cy.get("Input[name='city']").type("Baku");
-        cy.get("Input[name='country']").type("Azerbaijan");
-        cy.get("Input[name='zip']").type("040");
-        cy.get("button[type='button']").click();
+        cy.fiil();
         cy.get('.MuiButton-contained').click();
 
-        // cy.contains('Payment method').should('not.be.visible')
         cy.get('.MuiTypography-h6').should('have.text', "Payment method");
         cy.get('.MuiTypography-h6').should('not.have.text', "Review your order");
-
     })
 
     it('when user submits empty address form, validation messages ae displayed', () => {
-        cy.get("Input[name='firstName']").type("Name");
-        cy.get("Input[name='lastName']").type("Surname");
-        cy.get("Input[name='address']").type("Address");
-        cy.get("Input[name='city']").type("Baku");
-        cy.get("Input[name='country']").type("Azerbaijan");
-        cy.get("Input[name='zip']").type("040");
-        cy.get("button[type='button']").click();
+        cy.fiil();
+        cy.fiilPayment();
 
-        cy.get("Input[name='cardName']").type("CardName");
-        cy.get("Input[name='cardNumber']").type("32876481");
-        cy.get("Input[name='expDate']").type("2023-12");
-        cy.get("Input[name='cvv']").type("000");
-        cy.get('.MuiButton-contained').click();
+        let totalPrice;
+        cy.get('.css-1isisa7-MuiTypography-root').each(($li) => {
+            totalPrice = $li.text().match(/\d+\.\d+/)[0];
+        });
 
-        // cy.get('.MuiList-root').each(($list) => {
-        //     // $el is a wrapped jQuery element
-        //     let count = 0;
-        //     cy.log($list);
-
-        // })
-
+        let price = 0;
+        cy.get('.css-e784if-MuiTypography-root').each(($li) => {
+            const numericPart = $li.text().match(/\d+\.\d+/)[0];
+            price += parseFloat(numericPart);
+        }).then(() => {
+            cy.wrap(parseFloat(totalPrice)).should('eq', price)
+        })
     })
 })

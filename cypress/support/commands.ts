@@ -35,3 +35,21 @@
 //     }
 //   }
 // }
+
+Cypress.Commands.add('fiil', () => {
+    cy.get("Input[name='firstName']").type("Name");
+    cy.get("Input[name='lastName']").type("Surname");
+    cy.get("Input[name='address']").type("Address");
+    cy.get("Input[name='city']").type("Baku");
+    cy.get("Input[name='country']").type("Azerbaijan");
+    cy.get("Input[name='zip']").type("040");
+    cy.get("button[type='button']").click()
+})
+
+Cypress.Commands.add('fiilPayment', () => {
+    cy.get("Input[name='cardName']").type("CardName");
+    cy.get("Input[name='cardNumber']").type("32876481");
+    cy.get("Input[name='expDate']").type("2023-12");
+    cy.get("Input[name='cvv']").type("000");
+    cy.get('.MuiButton-contained').click();
+})
